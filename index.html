@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100d1b">
+<title>A little surprise for Nana ✨</title>
+<style>
+  :root { --ink:#f8f3ff; --muted:#c9bfd8; --violet:#b99aff; --pink:#ffb7d5; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; color:var(--ink); background:#100d1b; font-family:Georgia, "Times New Roman", serif; }
+  button { font:inherit; cursor:pointer; }
+  .page { min-height:100vh; display:none; }
+  .page.active { display:flex; }
+  #gate { align-items:center; justify-content:center; padding:28px 18px; text-align:center;
+    background:radial-gradient(ellipse at 50% 25%, #34244b 0%, #171225 48%, #0c0a13 100%); }
+  .gate-card { width:min(100%,520px); padding:38px 25px; border:1px solid #ffffff25; border-radius:28px;
+    background:#ffffff0b; box-shadow:0 25px 90px #0008; backdrop-filter:blur(10px); }
+  .eyebrow { color:var(--pink); letter-spacing:.22em; text-transform:uppercase; font:12px Arial,sans-serif; }
+  .gate-photo { display:block; width:min(100%,310px); max-height:245px; object-fit:cover; margin:22px auto 18px; border-radius:20px; border:1px solid #ffffff35; box-shadow:0 14px 40px #0008; }
+  .cat-photo { display:block; width:min(100%,260px); max-height:230px; object-fit:cover; margin:0 auto 12px; border-radius:18px; }
+  h1 { font-size:clamp(2.1rem,8vw,3.6rem); line-height:1.05; margin:18px 0 12px; }
+  .sub { color:var(--muted); font:15px/1.6 Arial,sans-serif; }
+  .buttons { display:flex; gap:12px; justify-content:center; margin-top:28px; flex-wrap:wrap; }
+  .btn { border:0; border-radius:999px; padding:14px 30px; min-width:125px; font:bold 14px Arial,sans-serif; transition:transform .2s,filter .2s; }
+  .btn:hover { transform:translateY(-2px); filter:brightness(1.1); }
+  .yes { color:#1a1024; background:linear-gradient(135deg,#f8c8e0,#c7b0ff); }
+  .no { color:#fff; background:#49334f; border:1px solid #ffffff35; }
+  #nope { display:none; margin:25px auto 0; max-width:330px; padding:22px; border-radius:22px; background:#1c1424; border:1px solid #ffb7d544; }
+  .cat { font-size:76px; display:block; filter:drop-shadow(0 8px 14px #0008); }
+  #nope h2 { margin:8px 0; color:#ffb7d5; }
+  #nope p { color:var(--muted); font:14px/1.5 Arial,sans-serif; }
+  #surprise { position:relative; display:none; flex-direction:column; justify-content:flex-end; padding:30px 18px 26px;
+    background-image:linear-gradient(180deg,#09081240 0%,#100d1b55 40%,#100d1beF 100%),url("assets/you-and-nana.png");
+    background-size:cover; background-position:center; background-attachment:scroll; }
+  #surprise.active { display:flex; }
+  .top-tag { position:absolute; top:22px; left:0; right:0; text-align:center; font:11px Arial,sans-serif; letter-spacing:.2em; text-transform:uppercase; text-shadow:0 2px 10px #000; }
+  .content { width:min(100%,680px); margin:48vh auto 0; text-align:center; }
+  .content h2 { font-size:clamp(2.2rem,9vw,4.4rem); margin:0 0 12px; text-shadow:0 3px 22px #000; }
+  .content p { font:15px/1.65 Arial,sans-serif; color:#f2eafa; text-shadow:0 2px 12px #000; }
+  .letter { display:none; margin:22px auto 0; padding:22px; max-width:570px; border-radius:20px; text-align:left;
+    color:#34253d; background:#fff4f8ed; box-shadow:0 15px 50px #0007; font:16px/1.7 Georgia,serif; }
+  .letter.open { display:block; animation:rise .45s ease both; }
+  .letter strong { color:#7d4777; }
+  .footer { margin-top:24px; color:#d8cce4; font:11px Arial,sans-serif; letter-spacing:.12em; }
+  .music-toggle { position:fixed; z-index:5; top:18px; right:16px; border:1px solid #ffffff55; border-radius:999px;
+    padding:11px 15px; color:#fff; background:#21172dcc; backdrop-filter:blur(12px); font:12px Arial,sans-serif; }
+  .music-toggle:focus-visible { outline:2px solid var(--pink); outline-offset:3px; }
+  .cake-wrap { margin:28px auto 0; padding:20px 16px; max-width:420px; border:1px solid #ffffff30;
+    border-radius:22px; background:#160f25b8; backdrop-filter:blur(8px); }
+  .cake { position:relative; width:150px; height:100px; margin:24px auto 14px; }
+  .cake-base { position:absolute; bottom:0; left:8px; width:134px; height:66px; border-radius:12px 12px 18px 18px;
+    background:linear-gradient(180deg,#f6b8d4,#bd79b7); box-shadow:inset 0 -9px #995b9e,0 9px 22px #0006; }
+  .cake-base:before { content:""; position:absolute; top:0; left:0; right:0; height:18px; border-radius:12px 12px 8px 8px;
+    background:#ffe3ed; }
+  .candle { position:absolute; z-index:2; bottom:62px; left:70px; width:10px; height:34px; border-radius:4px;
+    background:repeating-linear-gradient(135deg,#fff 0 5px,#b99aff 5px 10px); }
+  .flame { position:absolute; left:1px; top:-17px; width:8px; height:14px; border-radius:60% 40% 60% 40%;
+    background:#ffd66e; box-shadow:0 0 16px #ffd66e; animation:flicker .7s infinite alternate; }
+  .cake.blown .flame { display:none; }
+  @keyframes flicker { from { transform:rotate(-7deg) scale(.9); } to { transform:rotate(7deg) scale(1.12); } }
+  .sparkle { position:fixed; pointer-events:none; z-index:1; color:#ffe5f2; opacity:.65; animation:drift 9s linear infinite; }
+  @keyframes drift { from { transform:translateY(105vh) rotate(0); } to { transform:translateY(-12vh) rotate(240deg); } }
+  @keyframes rise { from {opacity:0; transform:translateY(14px)} to {opacity:1; transform:translateY(0)} }
+  @media (min-width:800px) { #surprise { background-position:center 42%; } .content { margin-top:52vh; } }
+</style>
+</head>
+<body>
+<section id="gate" class="page active">
+  <main class="gate-card">
+    <div class="eyebrow">A tiny identity check</div>
+    <img class="gate-photo" src="assets/nana-choice-photo.jpeg" alt="A funny photo for Nana's identity check">
+    <h1>Are you Nana?</h1>
+    <p class="sub">Before you enter this little corner of the universe,<br>we need to make sure it's really you. ✨</p>
+    <div class="buttons">
+      <button class="btn yes" id="yesBtn">YES, THAT'S ME</button>
+      <button class="btn no" id="noBtn">NO</button>
+    </div>
+    <div id="nope" role="status">
+      <img class="cat-photo" src="assets/angry-cat.jpeg" alt="The angry cat appears because you clicked no">
+      <h2>EXCUSE ME?!</h2>
+      <p>Wrong person. This surprise is for Nana only.<br>Try again, impostor.</p>
+      <button class="btn yes" id="tryBtn">Okay, let me try</button>
+    </div>
+  </main>
+</section>
+
+<section id="surprise" class="page">
+  <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false">♫ Play music</button>
+  <audio id="birthdayAudio" src="assets/golden-brown-clip.mp3" preload="metadata" loop></audio>
+  <div class="top-tag">a little world made just for you · ✦</div>
+  <main class="content">
+    <div class="eyebrow">To the one and only</div>
+    <h2>Happy Birthday, Nana ♡</h2>
+    <p>Some memories deserve a place of their own.<br>Here's a little one, made just for you.</p>
+    <button class="btn yes" id="letterBtn">OPEN YOUR LETTER ✉</button>
+    <article class="letter" id="letter">
+      <strong>Dear Nana,</strong><br><br>
+      Happy birthday! I wanted to make you something a little different —
+      a small place to keep a memory of us. I'm really glad we have this moment
+      together, and I hope your day is full of happiness, laughter, and everything
+      you love.<br><br>
+      Here's to more memories, more adventures, and more moments like this.<br><br>
+      <strong>With love ♡</strong>
+      <hr style="border:0;border-top:1px solid #d9bfd1;margin:22px 0">
+      <div lang="ja">
+        <strong>ナナへ ♡</strong><br><br>
+        お誕生日おめでとう！ いつも友達でいてくれて、本当にありがとう。
+        ゲームを通じて出会った私たちだけど、こんなふうに素敵な友情が生まれたことを、
+        今でも不思議に思うことがあります。あの時間が本当に楽しくて、
+        あなたはいつも私に優しくしてくれました。<br><br>
+        あなたと出会えて本当によかったです。一緒に過ごした時間や思い出を、
+        これからも大切にしたいと思っています。<br><br>
+        あなたの毎日が幸せと笑顔でいっぱいになりますように。
+        あなたにふさわしい素敵なことが、たくさん訪れますように。<br><br>
+        改めて、お誕生日おめでとう、ナナ！<br>
+        <strong>心を込めて ♡</strong>
+      </div>
+      <p style="font:12px Arial,sans-serif;color:#8b718b;margin-bottom:0">A little birthday letter in English and Japanese.</p>
+    </article>
+    <section class="cake-wrap" aria-label="Birthday cake surprise">
+      <div class="eyebrow">one more little surprise</div>
+      <div class="cake" id="cake">
+        <div class="candle"><span class="flame"></span></div>
+        <div class="cake-base"></div>
+      </div>
+      <p id="cakeMessage">Make a wish, Nana. ✨</p>
+      <button class="btn yes" id="cakeButton" type="button">BLOW OUT THE CANDLE 🎂</button>
+    </section>
+    <div class="footer">MADE WITH ♡ JUST FOR NANA</div>
+  </main>
+</section>
+<script>
+  const gate = document.getElementById('gate');
+  const surprise = document.getElementById('surprise');
+  const nope = document.getElementById('nope');
+  const birthdayAudio = document.getElementById('birthdayAudio');
+  const musicToggle = document.getElementById('musicToggle');
+  async function toggleMusic() {
+    if (birthdayAudio.paused) {
+      try {
+        await birthdayAudio.play();
+        musicToggle.textContent = '♫ Pause music';
+        musicToggle.setAttribute('aria-pressed', 'true');
+      } catch (error) {
+        musicToggle.textContent = '♫ Tap to play';
+      }
+    } else {
+      birthdayAudio.pause();
+      musicToggle.textContent = '♫ Play music';
+      musicToggle.setAttribute('aria-pressed', 'false');
+    }
+  }
+  document.getElementById('yesBtn').addEventListener('click', () => {
+    gate.classList.remove('active');
+    surprise.classList.add('active');
+    // Browsers may allow playback because this transition follows the user's tap.
+    toggleMusic();
+  });
+  musicToggle.addEventListener('click', toggleMusic);
+  document.getElementById('cakeButton').addEventListener('click', () => {
+    const cake = document.getElementById('cake');
+    const message = document.getElementById('cakeMessage');
+    const button = document.getElementById('cakeButton');
+    cake.classList.add('blown');
+    message.textContent = 'May all your wishes come true, Nana! Happy Birthday! ♡';
+    button.textContent = 'WISH SENT ✨';
+    button.disabled = true;
+    for (let i = 0; i < 18; i++) {
+      const star = document.createElement('span');
+      star.className = 'sparkle';
+      star.textContent = ['✦','♡','✧'][i % 3];
+      star.style.left = (Math.random() * 96 + 2) + 'vw';
+      star.style.animationDelay = (Math.random() * 2) + 's';
+      star.style.animationDuration = (6 + Math.random() * 5) + 's';
+      document.body.appendChild(star);
+      setTimeout(() => star.remove(), 12000);
+    }
+  });
+  document.getElementById('noBtn').addEventListener('click', () => {
+    nope.style.display = 'block';
+  });
+  document.getElementById('tryBtn').addEventListener('click', () => {
+    nope.style.display = 'none';
+  });
+  document.getElementById('letterBtn').addEventListener('click', (event) => {
+    const letter = document.getElementById('letter');
+    letter.classList.toggle('open');
+    event.currentTarget.textContent = letter.classList.contains('open') ? 'CLOSE YOUR LETTER ✉' : 'OPEN YOUR LETTER ✉';
+  });
+</script>
+</body>
+</html>
